@@ -11,7 +11,7 @@ class PostsController < ApplicationController
   # GET /posts/1.json
   def show
     #get_url
-    url = params[:src_url]
+    url = @post.src_url
     array = ["google", "naver", "blog", "cafe", "c9", "github", "daum", "tistory"]
     findflag = false
     @re_url=""
@@ -44,6 +44,7 @@ class PostsController < ApplicationController
   # POST /posts
   # POST /posts.json
   def create
+
     @post = Post.new(post_params)
 
     respond_to do |format|
@@ -63,17 +64,26 @@ class PostsController < ApplicationController
 
   def crawl_url
     url = params[:src_url]
-    res = HTTParty.get(url)
-    text = Nokogiri::HTML(res.body)
-    title = text.css('title').text
-    body = text.css('body').text
-    all = text.text
+    # res = HTTParty.get(url)
+    # text = Nokogiri::HTML(res.body)
+    doc = Nokogiri::HTML(open(url, :allow_redirections => :safe), nil, 'utf-8')
+    title = doc.css('title').text
+    body = doc.css('body').text
+    # all_text = ""
+    #
+    # body.split("\n").each do |line|
+    #   l = line.strip
+    #   if(l.length > 0)
+    #     # puts 1
+    #     all_text += l
+    #   end
+    # end
 
 
     # word_cloud
-    kor = /^[가-힣a-zA-Z0-9]+$/
-    all_text = text.text
-    all = text.text.split(' ')
+    # kor = /^[가-힣a-zA-Z0-9]+$/
+    # all_text = text.text
+    # all = text.text.split(' ')
 
     # counter = WordsCounted.count(
     #     all_text
@@ -81,37 +91,46 @@ class PostsController < ApplicationController
     # fre = counter.token_frequency
     # puts fre
 
-    word=Hash.new(0)
-
-    all.each do |a|
-        key = kor.match(a);
-        unless key.nil?
-            if word.has_key?(key)
-                word[key]+=1
-            else
-                word.store(key,1)
-            end
-        end
-    end
-    word = word.sort_by{|k,v| v}.reverse.to_h;
+    # word=Hash.new(0)
+    #
+    # all.each do |a|
+    #     key = kor.match(a);
+    #     unless key.nil?
+    #         if word.has_key?(key)
+    #             word[key]+=1
+    #         else
+    #             word.store(key,1)
+    #         end
+    #     end
+    # end
+    # word = word.sort_by{|k,v| v}.reverse.to_h;
 
 
     # twitterKoreanNLP
+    kor = /^[가-힣a-zA-Z0-9]+$/
     processor = TwitterKorean::Processor.new
     # Noralize
-    # twitter = processor.normalize(body)
+    twitter = processor.normalize(body)
     # Tokenize
-    twitter = processor.tokenize(body)
+    # twitter = processor.tokenize(all_text)
     # Stemming
-    # twitter = processor.stem(text)
+    # twitter = processor.stem(all_text)
     # extract pharases
-    # twitter = processor.extract_phrases(text)
-    # twitter = processor.extract_phrases(text).first.metadata
+    # twitter = processor.extract_phrases(all_text)
+    # twitter = processor.extract_phrases(all_text).first.metadata
 
-
+    word=Hash.new(0)
     twitter.each do |t|
-      puts t
+      key = kor.match(t);
+      unless key.nil?
+          if word.has_key?(key)
+              word[key]+=1
+          else
+              word.store(key,1)
+          end
+      end
     end
+    word = word.sort_by{|k,v| v}.reverse.to_h;
 
 
     Post.create(
@@ -122,7 +141,7 @@ class PostsController < ApplicationController
       tag3: word.keys[2],
       desc: params[:desc], #대략적인 설명
       html: body, # text | body
-      word_cloud: twitter # NLP fuction 비교
+      words: twitter # NLP fuction 비교
       )
     redirect_to root_path
   end
