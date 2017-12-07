@@ -64,74 +64,62 @@ class PostsController < ApplicationController
 
   def crawl_url
     url = params[:src_url]
-    # res = HTTParty.get(url)
-    # text = Nokogiri::HTML(res.body)
     doc = Nokogiri::HTML(open(url, :allow_redirections => :safe), nil, 'utf-8')
     title = doc.css('title').text
     body = doc.css('body').text
-    # all_text = ""
-    #
-    # body.split("\n").each do |line|
-    #   l = line.strip
-    #   if(l.length > 0)
-    #     # puts 1
-    #     all_text += l
-    #   end
-    # end
 
+    all_text = ""
+    body.split("\n").each do |line|
+      l = line.strip
+      l.gsub!(/<\/?[^>]*>/, "")
+      if(l.length > 0)
+        # puts l
+        all_text += l
+      end
+    end
 
-    # word_cloud
-    # kor = /^[가-힣a-zA-Z0-9]+$/
-    # all_text = text.text
-    # all = text.text.split(' ')
-
-    # counter = WordsCounted.count(
-    #     all_text
-    #     )
-    # fre = counter.token_frequency
-    # puts fre
-
-    # word=Hash.new(0)
-    #
-    # all.each do |a|
-    #     key = kor.match(a);
-    #     unless key.nil?
-    #         if word.has_key?(key)
-    #             word[key]+=1
-    #         else
-    #             word.store(key,1)
-    #         end
-    #     end
-    # end
-    # word = word.sort_by{|k,v| v}.reverse.to_h;
-
-
-    # twitterKoreanNLP
-    kor = /^[가-힣a-zA-Z0-9]+$/
     processor = TwitterKorean::Processor.new
     # Noralize
-    twitter = processor.normalize(body)
+    # twitter = processor.normalize(all_text)
     # Tokenize
     # twitter = processor.tokenize(all_text)
     # Stemming
-    # twitter = processor.stem(all_text)
+    twitter = processor.stem(all_text)
     # extract pharases
     # twitter = processor.extract_phrases(all_text)
     # twitter = processor.extract_phrases(all_text).first.metadata
 
-    word=Hash.new(0)
+    # kor = /^[가-힣a-zA-Z0-9]+$/
+    # word=Hash.new(0)
+    # twitter.each do |t|
+    #   key = kor.match(t);
+    #   unless key.nil?
+    #       if word.has_key?(key)
+    #           word[key]+=1
+    #       else
+    #           word.store(key,1)
+    #       end
+    #   end
+    # end
+    # word = word.sort_by{|k,v| v}.reverse.to_h;
+
+    # words_count
+    word = Hash.new(0)
     twitter.each do |t|
-      key = kor.match(t);
-      unless key.nil?
-          if word.has_key?(key)
-              word[key]+=1
-          else
-              word.store(key,1)
-          end
+      if word.has_key? t
+        word[t] += 1
+      else
+        word.store(t, 1)
       end
     end
-    word = word.sort_by{|k,v| v}.reverse.to_h;
+    word = word.sort_by {|k, v| v}.reverse.to_h
+    # puts "================="
+    # puts twitter.first.metadata.pos
+    # puts "================="
 
+    puts "================="
+    puts word
+    puts "================="
 
     Post.create(
       title: title,
@@ -140,10 +128,11 @@ class PostsController < ApplicationController
       tag2: word.keys[1],
       tag3: word.keys[2],
       desc: params[:desc], #대략적인 설명
-      html: body, # text | body
-      words: twitter # NLP fuction 비교
+      html: "test", #all_text, # text | body
+      words: "test" #twitter # NLP fuction 비교
       )
     redirect_to root_path
+
   end
 
   # PATCH/PUT /posts/1

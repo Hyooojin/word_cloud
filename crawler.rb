@@ -2,6 +2,9 @@ require 'nokogiri'
 require 'httparty'
 require 'open-uri'
 require 'open_uri_redirections'
+require 'twkorean'
+require 'twitter-korean-text-ruby'
+
 
 url = "http://kkaok.tistory.com/1498"
 # res = HTTParty.get(url)
@@ -21,4 +24,15 @@ body.split("\n").each do |line|
     all_text += l
   end
 end
-puts all_text
+# puts all_text
+
+processor = TwitterKorean::Processor.new
+# twitter = processor.tokenize(all_text)
+# Tokenize
+# twitter = processor.tokenize(all_text)
+# Stemming
+ twitter = processor.stem(all_text)
+puts twitter
+
+puts "====="
+# puts twitter
