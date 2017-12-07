@@ -20,6 +20,8 @@ ActiveRecord::Schema.define(version: 20171205091634) do
     t.string   "tag2"
     t.string   "tag3"
     t.text     "desc"
+    t.text     "html"
+    t.text     "words"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end

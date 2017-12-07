@@ -7,6 +7,8 @@ class CreatePosts < ActiveRecord::Migration
       t.string :tag2
       t.string :tag3
       t.text :desc
+      t.text :html
+      t.text :words
 
       t.timestamps null: false
     end

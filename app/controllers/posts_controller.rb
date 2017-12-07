@@ -10,6 +10,26 @@ class PostsController < ApplicationController
   # GET /posts/1
   # GET /posts/1.json
   def show
+    #get_url
+    url = params[:src_url]
+    array = ["google", "naver", "blog", "cafe", "c9", "github", "daum", "tistory"]
+    findflag = false
+    @re_url=""
+    array.each do |arr|
+        # puts arr
+        if url.include? arr
+            # puts arr
+            if @re_url == 'private'
+                @re_url =""
+            end
+            @re_url += arr
+            @re_url += " "
+            findflag = true
+        else
+            # puts "private"
+            @re_url = "private" if !findflag
+        end
+    end
   end
 
   # GET /posts/new
@@ -49,6 +69,8 @@ class PostsController < ApplicationController
     body = text.css('body').text
     all = text.text
 
+
+    # word_cloud
     kor = /^[가-힣a-zA-Z0-9]+$/
     all_text = text.text
     all = text.text.split(' ')
@@ -72,13 +94,35 @@ class PostsController < ApplicationController
         end
     end
     word = word.sort_by{|k,v| v}.reverse.to_h;
+
+
+    # twitterKoreanNLP
+    processor = TwitterKorean::Processor.new
+    # Noralize
+    # twitter = processor.normalize(body)
+    # Tokenize
+    twitter = processor.tokenize(body)
+    # Stemming
+    # twitter = processor.stem(text)
+    # extract pharases
+    # twitter = processor.extract_phrases(text)
+    # twitter = processor.extract_phrases(text).first.metadata
+
+
+    twitter.each do |t|
+      puts t
+    end
+
+
     Post.create(
       title: title,
       src_url: params[:src_url],
       tag1: word.keys[0],
       tag2: word.keys[1],
       tag3: word.keys[2],
-      desc: body
+      desc: params[:desc], #대략적인 설명
+      html: body, # text | body
+      word_cloud: twitter # NLP fuction 비교
       )
     redirect_to root_path
   end

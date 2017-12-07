@@ -1,4 +1,8 @@
 <%= form_tag(crawl_url_posts_path, method: "get") do %>
+  <%= label_tag(:src_url, "URL : ") %>
   <%= text_field_tag(:src_url) %>
+  <br>
+  <%= label_tag(:desc, "설명 : ") %>
+  <%= text_field_tag(:desc) %>
   <%= submit_tag("submit")%>
 <% end %>

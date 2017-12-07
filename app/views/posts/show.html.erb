@@ -1,21 +1,36 @@
 <p id="notice"><%= notice %></p>
 
 <p>
-  <strong>Title:</strong>
-  <%= @post.title %>
-</p>
-
-<p>
   <strong>Src url:</strong>
   <%= @post.src_url %>
 </p>
 
+<p>
+  <strong>Re url:</strong>
+  <%= @re_url %>
+</p>
+
 
 <p>
-  <strong>html_body</strong>
+  <strong>Title:</strong>
+  <%= @post.title %>
+</p>
+
+
+<p>
+  <strong>Desc: </strong>
   <%= @post.desc%>
 </p>
 
+<p>
+  <strong>word_cloud</strong>
+  <%= @post.words%>
+</p>
+
+<p>
+  <strong>html구조</strong>
+  <%= @post.html%>
+</p>
 
 
 <%= link_to 'Edit', edit_post_path(@post) %> |
