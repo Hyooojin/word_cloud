@@ -1,5 +1,6 @@
 source 'https://rubygems.org'
 
+gem 'sanitize'
 gem 'pry'
 gem 'open_uri_redirections'
 gem 'nokogiri'

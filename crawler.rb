@@ -4,19 +4,30 @@ require 'open-uri'
 require 'open_uri_redirections'
 require 'twkorean'
 require 'twitter-korean-text-ruby'
+require 'sanitize'
 
 
-url = "https://m.blog.naver.com/urimalo_/221119736323"
-# url = "http://kkaok.tistory.com/1498"
+# url = "https://m.blog.naver.com/urimalo_/221119736323"
+url = "http://kkaok.tistory.com/1498"
 # res = HTTParty.get(url)
 # doc = Nokogiri::HTML(res.body)
 doc = Nokogiri::HTML(open(url, :allow_redirections => :safe), nil, 'utf-8')
+doc.css('script').remove
+# puts "====js====="
+# # puts doc
+# doc.xpath("//@*[starts-with(name(), 'on')]").remove
+doc.xpath("//@*[starts-with(name(),'on')]").remove
+# doc.gsub!(/<\s*script\s*>|<\s*\/\s*script\s*>/, '')
+# puts doc
 title = doc.css('title').text
 body = doc.css('body').text
+puts "========="
+puts doc
 puts "======"
 puts title
 puts "===="
-# puts body
+puts body
+
 
 all_text = ""
 body.split("\n").each do |line|

@@ -65,18 +65,24 @@ class PostsController < ApplicationController
   def crawl_url
     url = params[:src_url]
     doc = Nokogiri::HTML(open(url, :allow_redirections => :safe), nil, 'utf-8')
+    doc.css('script').remove
+    doc.xpath("//@*[starts-with(name(),'on')]").remove
+
     title = doc.css('title').text
     body = doc.css('body').text
+
 
     all_text = ""
     body.split("\n").each do |line|
       l = line.strip
-      l.gsub!(/<\/?[^>]*>/, "")
+      # l.gsub!(/<\/?[^>]*>/, "")
       if(l.length > 0)
         # puts l
         all_text += l
       end
     end
+
+    # all_text.gsub(/<\s*script\s*>|<\s*\/\s*script\s*>/, '')
 
     processor = TwitterKorean::Processor.new
     # Noralize
@@ -107,19 +113,21 @@ class PostsController < ApplicationController
     word = Hash.new(0)
     twitter.each do |t|
       if word.has_key? t
-        word[t] += 1 #if t.metadata.pos == :noun
+        word[t] += 1 if t.metadata.pos == :noun
       else
-        word.store(t, 1) #if t.metadata.pos == :noun
+        word.store(t, 1) if t.metadata.pos == :noun
       end
     end
     word = word.sort_by {|k, v| v}.reverse.to_h
+    puts "====="
+    puts word
     # puts "================="
     # puts twitter.first.metadata.pos
     # puts "================="
 
-    puts "================="
-    puts word
-    puts "================="
+    # puts "================="
+    # puts word
+    # puts "================="
 
     Post.create(
       title: title,
@@ -129,7 +137,7 @@ class PostsController < ApplicationController
       tag3: word.keys[2],
       desc: params[:desc], #대략적인 설명
       html: all_text, # text | body
-      words: twitter #word #twitter # word # NLP fuction 비교
+      words: word #word twitter # word # NLP fuction 비교
       )
     redirect_to root_path
 
