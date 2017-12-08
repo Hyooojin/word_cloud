@@ -21,7 +21,8 @@
   <tbody>
     <% @posts.each do |post| %>
       <tr>
-        <td><%= post.title.encode!('UTF-8', 'binary', invalid: :replace, undef: :replace, replace: '') %></td>
+        <!--<%#binding.pry%>-->
+        <td><%= post.title%></td> <!--네이버 블로그 인코드 에러를 막기 위함 !!  .encode!('UTF-8', 'binary', invalid: :replace, undef: :replace, replace: '')-->
         <td><%= post.src_url %></td>
         <td><%= post.tag1 %></td>
         <td><%= post.tag2 %></td>

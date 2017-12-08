@@ -66,7 +66,6 @@ class PostsController < ApplicationController
     url = params[:src_url]
     doc = Nokogiri::HTML(open(url, :allow_redirections => :safe), nil, 'utf-8')
     title = doc.css('title').text
-    puts title
     body = doc.css('body').text
 
     all_text = ""
