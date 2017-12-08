@@ -6,12 +6,15 @@ require 'twkorean'
 require 'twitter-korean-text-ruby'
 
 
-url = "http://kkaok.tistory.com/1498"
+url = "https://m.blog.naver.com/urimalo_/221119736323"
+# url = "http://kkaok.tistory.com/1498"
 # res = HTTParty.get(url)
 # doc = Nokogiri::HTML(res.body)
 doc = Nokogiri::HTML(open(url, :allow_redirections => :safe), nil, 'utf-8')
 title = doc.css('title').text
 body = doc.css('body').text
+puts "======"
+puts title
 puts "===="
 # puts body
 
@@ -32,7 +35,7 @@ processor = TwitterKorean::Processor.new
 # twitter = processor.tokenize(all_text)
 # Stemming
  twitter = processor.stem(all_text)
-puts twitter
+# puts twitter
 
 puts "====="
 # puts twitter

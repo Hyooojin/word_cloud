@@ -21,7 +21,7 @@
   <tbody>
     <% @posts.each do |post| %>
       <tr>
-        <td><%= post.title %></td>
+        <td><%= post.title.encode!('UTF-8', 'binary', invalid: :replace, undef: :replace, replace: '') %></td>
         <td><%= post.src_url %></td>
         <td><%= post.tag1 %></td>
         <td><%= post.tag2 %></td>

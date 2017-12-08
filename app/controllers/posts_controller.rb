@@ -66,6 +66,7 @@ class PostsController < ApplicationController
     url = params[:src_url]
     doc = Nokogiri::HTML(open(url, :allow_redirections => :safe), nil, 'utf-8')
     title = doc.css('title').text
+    puts title
     body = doc.css('body').text
 
     all_text = ""
@@ -107,9 +108,9 @@ class PostsController < ApplicationController
     word = Hash.new(0)
     twitter.each do |t|
       if word.has_key? t
-        word[t] += 1
+        word[t] += 1 #if t.metadata.pos == :noun
       else
-        word.store(t, 1)
+        word.store(t, 1) #if t.metadata.pos == :noun
       end
     end
     word = word.sort_by {|k, v| v}.reverse.to_h
@@ -128,8 +129,8 @@ class PostsController < ApplicationController
       tag2: word.keys[1],
       tag3: word.keys[2],
       desc: params[:desc], #대략적인 설명
-      html: "test", #all_text, # text | body
-      words: "test" #twitter # NLP fuction 비교
+      html: all_text, # text | body
+      words: twitter #word #twitter # word # NLP fuction 비교
       )
     redirect_to root_path
 
