@@ -65,13 +65,16 @@ class PostsController < ApplicationController
   def crawl_url
     url = params[:src_url]
     doc = Nokogiri::HTML(open(url, :allow_redirections => :safe), nil, 'utf-8')
+      # doc = Nokogiri::HTML(open(url, :allow_redirections => :safe), nil, 'euc-kr')
     doc.css('script').remove
     doc.xpath("//@*[starts-with(name(),'on')]").remove
 
+
     title = doc.css('title').text
     body = doc.css('body').text
+    # body.gsub!(/<\s*script\s*>|<\s*\/\s*script\s*>/, '')
 
-
+    all_array = Array.new
     all_text = ""
     body.split("\n").each do |line|
       l = line.strip
@@ -79,6 +82,7 @@ class PostsController < ApplicationController
       if(l.length > 0)
         # puts l
         all_text += l
+        all_array << l
       end
     end
 
@@ -94,20 +98,14 @@ class PostsController < ApplicationController
     # extract pharases
     # twitter = processor.extract_phrases(all_text)
     # twitter = processor.extract_phrases(all_text).first.metadata
+    #
 
-    # kor = /^[가-힣a-zA-Z0-9]+$/
-    # word=Hash.new(0)
-    # twitter.each do |t|
-    #   key = kor.match(t);
-    #   unless key.nil?
-    #       if word.has_key?(key)
-    #           word[key]+=1
-    #       else
-    #           word.store(key,1)
-    #       end
-    #   end
-    # end
-    # word = word.sort_by{|k,v| v}.reverse.to_h;
+    #
+    # puts "******************************"
+    # puts model
+    # puts "******************************"
+    # puts matrix
+
 
     # words_count
     word = Hash.new(0)
@@ -136,7 +134,7 @@ class PostsController < ApplicationController
       tag2: word.keys[1],
       tag3: word.keys[2],
       desc: params[:desc], #대략적인 설명
-      html: all_text, # text | body
+      html: all_array, # text | body
       words: word #word twitter # word # NLP fuction 비교
       )
     redirect_to root_path

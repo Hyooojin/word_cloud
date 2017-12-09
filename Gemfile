@@ -1,5 +1,8 @@
 source 'https://rubygems.org'
 
+# gem 'glove'
+# gem 'word2vec-ruby'
+gem 'gsl'
 gem 'sanitize'
 gem 'pry'
 gem 'open_uri_redirections'
@@ -10,8 +13,10 @@ gem 'rails_db'
 gem 'words_counted'
 gem 'twkorean'
 gem 'twitter-korean-text-ruby'
-
+gem 'matrix'
+gem 'tf-idf-similarity'
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
+
 gem 'rails', '4.2.9'
 # Use sqlite3 as the database for Active Record
 gem 'sqlite3'

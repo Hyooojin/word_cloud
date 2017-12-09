@@ -6,12 +6,13 @@ require 'twkorean'
 require 'twitter-korean-text-ruby'
 require 'sanitize'
 
-
+url = "http://www.travelnbike.com/news/articleView.html?idxno=49809"
 # url = "https://m.blog.naver.com/urimalo_/221119736323"
-url = "http://kkaok.tistory.com/1498"
+# url = "http://kkaok.tistory.com/1498"
 # res = HTTParty.get(url)
 # doc = Nokogiri::HTML(res.body)
-doc = Nokogiri::HTML(open(url, :allow_redirections => :safe), nil, 'utf-8')
+# doc = Nokogiri::HTML(open(url, :allow_redirections => :safe), nil, 'utf-8')
+doc = Nokogiri::HTML(open(url, :allow_redirections => :safe), nil, 'euc-kr')
 doc.css('script').remove
 # puts "====js====="
 # # puts doc
@@ -22,7 +23,7 @@ doc.xpath("//@*[starts-with(name(),'on')]").remove
 title = doc.css('title').text
 body = doc.css('body').text
 puts "========="
-puts doc
+# puts doc
 puts "======"
 puts title
 puts "===="
