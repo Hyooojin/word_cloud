@@ -64,8 +64,13 @@ class PostsController < ApplicationController
 
   def crawl_url
     url = params[:src_url]
-    doc = Nokogiri::HTML(open(url, :allow_redirections => :safe), nil, 'utf-8')
-      # doc = Nokogiri::HTML(open(url, :allow_redirections => :safe), nil, 'euc-kr')
+    response = HTTParty.get(url)
+    doc = Nokogiri::HTML(response.body)
+
+
+    # m.blog.naver.com/kaite1130/221151754855
+    # doc = Nokogiri::HTML(open(url, :allow_redirections => :safe), nil, 'utf-8')
+    # doc = Nokogiri::HTML(open(url, :allow_redirections => :safe), nil, 'euc-kr')
     doc.css('script').remove
     doc.xpath("//@*[starts-with(name(),'on')]").remove
 
@@ -134,7 +139,7 @@ class PostsController < ApplicationController
       tag2: word.keys[1],
       tag3: word.keys[2],
       desc: params[:desc], #대략적인 설명
-      html: all_array, # text | body
+      html: doc, #all_text, # all_arra y# text | body
       words: word #word twitter # word # NLP fuction 비교
       )
     redirect_to root_path
