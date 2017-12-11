@@ -30,6 +30,7 @@ require 'tf-idf-similarity'
     end
   end
   puts "========="
+  puts title
 all_text << TfIdfSimilarity::Document.new(title)
   # puts all_text.class
   # puts all_text

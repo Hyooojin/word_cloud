@@ -78,6 +78,11 @@ class PostsController < ApplicationController
     doc.xpath("//@*[starts-with(name(),'on')]").remove
 
 
+    # URL
+    # url.match()
+
+
+
     title = doc.css('title').text
     body = doc.css('body').text
     # body.gsub!(/<\s*script\s*>|<\s*\/\s*script\s*>/, '')
@@ -96,6 +101,8 @@ class PostsController < ApplicationController
 
     # all_text.gsub(/<\s*script\s*>|<\s*\/\s*script\s*>/, '')
 
+
+    # twitter NLP
     processor = TwitterKorean::Processor.new
     # Noralize
     # twitter = processor.normalize(all_text)
@@ -106,20 +113,22 @@ class PostsController < ApplicationController
     # extract pharases
     # twitter = processor.extract_phrases(all_text)
     # twitter = processor.extract_phrases(all_text).first.metadata
-    #
 
-    #
-    # puts "******************************"
-    # puts model
-    # puts "******************************"
-    # puts matrix
+
+    # hashtag
+    metadata = Array.new
+    twitter.each do |t|
+      metadata << t if t.metadata.pos == :hashtag # t.metadata
+      # puts t.metadata
+    end
+
 
 
     # words_count
     word = Hash.new(0)
     twitter.each do |t|
       if word.has_key? t
-        word[t] += 1 if t.metadata.pos == :noun
+        word[t] += 1 if t.metadata.pos == :noun # :hasttag
       else
         word.store(t, 1) if t.metadata.pos == :noun
       end
@@ -135,6 +144,8 @@ class PostsController < ApplicationController
     # puts word
     # puts "================="
 
+
+
     Post.create(
       title: title,
       src_url: params[:src_url],
@@ -142,8 +153,8 @@ class PostsController < ApplicationController
       tag2: word.keys[1],
       tag3: word.keys[2],
       desc: params[:desc], #대략적인 설명
-      html: all_text, #all_text, # all_arra y# text | body
-      words: word #word twitter # word # NLP fuction 비교
+      html: all_array, #all_text, # all_arra y# text | body
+      words: metadata #word twitter # word # NLP fuction 비교
       )
     redirect_to root_path
 
