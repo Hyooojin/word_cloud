@@ -2,13 +2,48 @@
 # url = "http://navercast.naver.com/magazine_contents.nhn?rid=1639&contents_id=139016"
 # url = "https://stackoverflow.com/questions/7908598/add-https-to-url-if-its-not-there"
 # url = "http://www.loc.gov/standards/mods/v3/mods-3-0.xsd"
-url = "http://www.test.com/dir/filename.jpg?var1=foo#bar"
+# url = "http://www.test.com/dir/filename.jpg?var1=foo#bar"
+url = "https://blog.naver.com/sera8668/221159434304"
+url = "http://blog.daum.net/mtholic/8113342"
 # url = "not url"
 # url_re = /^((http[s]?|ftp):)\/)?/
 
+# m 붙이기
+# re_url = url.gsub("https://")
+# puts re_url.to_s
+
+re_url = url.partition("//")
+# puts re_url[-1]
+re_url = re_url[1] + ("m.")
+puts re_url
+
+
+# re_url = ""
+# url.partition("//").each do |re|
+#    re[1] = re[1]+("m.")
+#    puts re
+# end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# 정규표현식
+
 # re_url = url_re.match(url)
 # puts re_url
-puts url.match(/^((http[s]?|ftp):\/)?\/?([^:\/\s]+)((\/\w+)*\/)([\w\-\.]+[^#?\s]+)(.*)?(#[\w\-]+)?$/)
+# puts url.match(/^((http[s]?|ftp):\/)?\/?([^:\/\s]+)((\/\w+)*\/)([\w\-\.]+[^#?\s]+)(.*)?(#[\w\-]+)?$/)
 # puts url.match(/((http[s]?|ftp):\/)?\/?/)
 # puts url.match(/[:\/\w]+/)
 # puts url.match(/(\/\w+)*\//)
@@ -21,10 +56,15 @@ puts url.match(/^((http[s]?|ftp):\/)?\/?([^:\/\s]+)((\/\w+)*\/)([\w\-\.]+[^#?\s]
 
 
 # /기준으로 나누기
-puts url.split("/")
+# puts url.split("/")
 
 
 # http:// 부터 .com까지만 가져오기
+# puts url.match(/http[s]?:\/\/?[^:\/\s]+/)
+# puts url.match(/[\/]/) # /
+# puts url.match(/[\/]+/) #//
+# puts url.match(/[^\/]+/) #http:
+# puts url.match(/([\/]+)/)
 # // 혹은 www 부터 .com 사이만 가져오기
 
 
