@@ -64,9 +64,13 @@ class PostsController < ApplicationController
 
   def crawl_url
     url = params[:src_url]
+
+
     unless url[/\Ahttp:\/\//] || url[/\Ahttps:\/\//]
       url = "http://#{url}"
     end
+
+
     response = HTTParty.get(url)
     doc = Nokogiri::HTML(response.body)
 
@@ -89,7 +93,7 @@ class PostsController < ApplicationController
       # l.gsub!(/<\/?[^>]*>/, "")
       if(l.length > 0)
         # puts l
-        all_text += l + " "
+        all_text += l
         all_array << l
       end
     end
