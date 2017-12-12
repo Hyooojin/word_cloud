@@ -69,6 +69,9 @@ class PostsController < ApplicationController
     body_name = value[0]
     tag_name = value[1]
     mobile_mode = value[2]
+    puts body_name
+    puts tag_name
+    puts mobile_mode
 
     # #checking url
     # If there is no http://
@@ -146,8 +149,8 @@ class PostsController < ApplicationController
       end
     end
     word = word.sort_by {|k, v| v}.reverse.to_h
-    puts "====="
-    puts word
+    # puts "====="
+    # puts word
     # puts "================="
     # puts twitter.first.metadata.pos
     # puts "================="
