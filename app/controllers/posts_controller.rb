@@ -79,7 +79,7 @@ class PostsController < ApplicationController
       url = "http://#{url}"
     end
     #mobile_mod check
-    if mobile_mode && url["m."].nil?
+    if mobile_mode
       url = url.gsub(url.partition("//")[1], url.partition("//")[1]+"m." )
     end
 
@@ -104,17 +104,22 @@ class PostsController < ApplicationController
 
 
     all_array = Array.new
-    all_text = ""
-    content.split("\n").each do |line|
-      l = line.strip
+    # all_text = content.split(".")
+    content = content.gsub("  ","")
+    all_text = content.split(/[\?\!\.;]+/)
+    p '*******************'
+    p content
+    all_text.length.times do |i|
+      l = all_text[i].strip
       # l.gsub!(/\s+/, "")
       if(l.length > 0)
-        puts l
-        all_text += l + " "
-        all_array << l
+        # puts l
+        all_text[i] = l
+        # all_array << l
       end
     end
-
+p '~~~~~~~~~~~~~~~~~~~~~~'
+    p all_text
     # all_text.gsub(/<\s*script\s*>|<\s*\/\s*script\s*>/, '')
 
 
@@ -125,7 +130,14 @@ class PostsController < ApplicationController
     # Tokenize
     # twitter = processor.tokenize(all_text)
     # Stemming
-    twitter = processor.stem(all_text)
+    twitter = Array.new
+    all_text.each do |s|
+      twitter << processor.stem(s)
+    end
+
+    p twitter
+    p tag
+    p '======================'
     # extract pharases
     # twitter = processor.extract_phrases(all_text)
     # twitter = processor.extract_phrases(all_text).first.metadata
@@ -133,20 +145,23 @@ class PostsController < ApplicationController
 
     # hashtag
     metadata = Array.new
-    twitter.each do |t|
-      metadata << t if t.metadata.pos == :hashtag # t.metadata
-      # puts t.metadata
+    twitter.length.times do |i|
+      twitter[i].each do |t|
+        metadata << t if t.metadata.pos == :hashtag # t.metadata
+        # puts t.metadata
+      end
     end
-
 
 
     # words_count
     word = Hash.new(0)
-    twitter.each do |t|
-      if word.has_key? t
-        word[t] += 1 if t.metadata.pos == :noun # :hasttag
-      else
-        word.store(t, 1) if t.metadata.pos == :noun
+    twitter.length.times do |i|
+      twitter[i].each do |t|
+        if word.has_key? t
+          word[t] += 1 if t.metadata.pos == :noun # :hasttag
+        else
+          word.store(t, 1) if t.metadata.pos == :noun
+        end
       end
     end
     word = word.sort_by {|k, v| v}.reverse.to_h
@@ -214,22 +229,28 @@ class PostsController < ApplicationController
     def check_url(url)
       crawl_hash= {
         "cafe.naver"    => ["#ct",nil,true],
+        "blog.naver"    => [".se_component_wrap",".post_tag",true],
         "cafe.daum"     => ["#daumWrap",nil,true],
-        "blog.naver"    => [".se_component_wrap","list_tag",true],
-        "blog.daum"     => ["#daumWrap",nil,true],
-        "stackoverflow" => ["body",nil,false],
-        "github" => ["body",nil,false],
-        "brunch" => [".wrap_view_article",nil,false]
+        "blog.daum"     => ["#article","#tagListLayer_11777182",true],
+        "stackoverflow" => ["#mainbar",nil,false],
+        "github"        => ["#readme","body",false],
+        "brunch"        => [".wrap_view_article",nil,false]
       }
+
+      def_val = ["body",nil,false] # crawl_hash에 지정되어 있지 않은 도메인의 url
 
       # "body name","tag name", "Mobile Mode"
       crawl_hash.each do |key, val|
+        p val[1]
+        p val[2]
         unless url[key].nil?
+          val[-1] = false unless url["/m."].nil?
           #key가 crawo_hash에 있는 경우, key에 해당하는 val값이 return
+          p val
           return val
         end
       end
 
-      return ["body",nil,false] # crawl_hash에 지정되어 있지 않은 도메인의 url
+      return def_val
     end
 end
