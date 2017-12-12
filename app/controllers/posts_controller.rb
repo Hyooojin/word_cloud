@@ -64,6 +64,18 @@ class PostsController < ApplicationController
 
   def crawl_url
     url = params[:src_url]
+
+    m_url = ["naver", "daum"] # m_url[i]
+    m_url.each do |m|
+      if url.include? m
+        url = url.gsub(url.partition("//")[1], url.partition("//")[1]+"m." )
+      end
+      # puts m
+    end
+
+
+
+
     unless url[/\Ahttp:\/\//] || url[/\Ahttps:\/\//]
       url = "http://#{url}"
     end

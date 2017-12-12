@@ -2,9 +2,9 @@
 # url = "http://navercast.naver.com/magazine_contents.nhn?rid=1639&contents_id=139016"
 # url = "https://stackoverflow.com/questions/7908598/add-https-to-url-if-its-not-there"
 # url = "http://www.loc.gov/standards/mods/v3/mods-3-0.xsd"
-# url = "http://www.test.com/dir/filename.jpg?var1=foo#bar"
-url = "https://blog.naver.com/sera8668/221159434304"
-url = "http://blog.daum.net/mtholic/8113342"
+url = "http://www.test.com/dir/filename.jpg?var1=foo#bar"
+# url = "https://blog.naver.com/sera8668/221159434304"
+# url = "http://blog.daum.net/mtholic/8113342"
 # url = "not url"
 # url_re = /^((http[s]?|ftp):)\/)?/
 
@@ -12,10 +12,52 @@ url = "http://blog.daum.net/mtholic/8113342"
 # re_url = url.gsub("https://")
 # puts re_url.to_s
 
-re_url = url.partition("//")
-# puts re_url[-1]
-re_url = re_url[1] + ("m.")
-puts re_url
+# puts url.partition("//")[1], url.partition("//")
+# url = url.gsub(url.partition("//")[1], url.partition("//")[1]+"m." )
+
+# url.include? "naver"
+# url = url.gsub(url.partition("//")[1], url.partition("//")[1]+"m." )
+
+# puts m_url[0]
+#
+# m_url = ["naver", "daum"]
+# # if url.include? naver
+# #   url = url.gsub(url.partition("//")[1], url.partition("//")[1]+"m." )
+# # end
+
+
+
+
+
+m_url = ["naver", "daum"]
+m_url.each do |m|
+  if url.include? m
+    url = url.gsub(url.partition("//")[1], url.partition("//")[1]+"m." )
+  end
+  # puts m
+end
+
+
+puts url
+
+
+# i = 0
+# if url.include? m_url[i]
+#
+# end
+
+
+# puts url.partition("//")[1]+"m."
+#
+# re_url = url.gsub(url.partition("//")[1], url.partition("//")[1]+"m." )
+# puts re_url
+
+
+# url.gsub(/^http[s]/, /^http[s]/)
+# re_url = url.partition("//").gsub(url.partition("//").)
+# # puts re_url[-1]
+# re_url = re_url[1] + ("m.")
+# puts re_url
 
 
 # re_url = ""
