@@ -65,51 +65,43 @@ class PostsController < ApplicationController
   def crawl_url
     url = params[:src_url]
 
-    m_url = ["naver", "daum"] # m_url[i]
-    m_url.each do |m|
-      if url.include? m
-        url = url.gsub(url.partition("//")[1], url.partition("//")[1]+"m." )
-      end
-      # puts m
-    end
+    value = check_url(url) # return "body name","tag name", "Mobile Mode"
+    body_name = value[0]
+    tag_name = value[1]
+    mobile_mode = value[2]
 
-
+    # #checking url
+    # If there is no http://
     unless url[/\Ahttp:\/\//] || url[/\Ahttps:\/\//]
       url = "http://#{url}"
     end
+    #mobile_mod check
+    if mobile_mode
+      url = url.gsub(url.partition("//")[1], url.partition("//")[1]+"m." )
+    end
+
+    # #crawling
     response = HTTParty.get(url)
     doc = Nokogiri::HTML(response.body)
-
-
-    # m.blog.naver.com/kaite1130/221151754855
     # doc = Nokogiri::HTML(open(url, :allow_redirections => :safe), nil, 'utf-8')
     # doc = Nokogiri::HTML(open(url, :allow_redirections => :safe), nil, 'euc-kr')
+
+    # remove
     doc.css('script').remove
     doc.xpath("//@*[starts-with(name(),'on')]").remove
 
-
-    # URL
-    # url.match()
-
-
-
+    # select body
     title = doc.css('title').text
-    body = doc.css('body').text
-    content = doc.css(".repository-content").text
-    # doc.css(".wrap_view_article").text # 브런치
-    # stackoverflow
-    # doc.css("#question-header").text
-    # doc.css("#mainbar").text
-
-    #github
-    # doc.css("#readme").text
-    #
-
+    # body = doc.css('body').text
+    content = doc.css(body_name).text
     # body.gsub!(/<\s*script\s*>|<\s*\/\s*script\s*>/, '')
+
+    # tag??
+
 
     all_array = Array.new
     all_text = ""
-    body.split("\n").each do |line|
+    content.split("\n").each do |line|
       l = line.strip
       # l.gsub!(/<\/?[^>]*>/, "")
       if(l.length > 0)
@@ -213,5 +205,27 @@ class PostsController < ApplicationController
     # Never trust parameters from the scary internet, only allow the white list through.
     def post_params
       params.require(:post).permit(:title, :src_url, :tag1, :tag2, :tag3, :desc)
+    end
+
+    def check_url(url)
+      crawl_hash= {
+        "cafe.naver"    => ["#ct",nil,true],
+        "cafe.daum"     => ["#daumWrap",nil,true],
+        "blog.naver"    => [".se_component_wrap","list_tag",true],
+        "blog.daum"     => ["#daumWrap",nil,true],
+        "stackoverflow" => ["body",nil,false],
+        "github" => ["body",nil,false],
+        "brunch" => [".wrap_view_article",nil,false]
+      }
+
+      # "body name","tag name", "Mobile Mode"
+      crawl_hash.each do |key, val|
+        unless url[key].nil?
+          #key가 crawo_hash에 있는 경우, key에 해당하는 val값이 return
+          return val
+        end
+      end
+
+      return ["body",nil,false] # crawl_hash에 지정되어 있지 않은 도메인의 url
     end
 end

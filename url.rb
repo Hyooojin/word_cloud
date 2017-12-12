@@ -10,6 +10,15 @@ url = "http://www.test.com/dir/filename.jpg?var1=foo#bar"
 # url = "not url"
 # url_re = /^((http[s]?|ftp):)\/)?/
 
+m_url = ["naver", "daum"] # m_url[i]
+m_url.each do |m|
+  if url.include? m
+    url = url.gsub(url.partition("//")[1], url.partition("//")[1]+"m." )
+  end
+  # puts m
+end
+
+
 # m 붙이기
 # re_url = url.gsub("https://")
 # puts re_url.to_s
