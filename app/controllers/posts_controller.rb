@@ -66,9 +66,11 @@ class PostsController < ApplicationController
     url = params[:src_url]
 
     value = check_url(url) # return "body name","tag name", "Mobile Mode"
-    body_name = value[0]
-    tag_name = value[1]
-    mobile_mode = value[2]
+    title_name = value[0]
+    body_name = value[1]
+    tag_name = value[2]
+    mobile_mode = value[3]
+    puts title_name
     puts body_name
     puts tag_name
     puts mobile_mode
@@ -94,14 +96,13 @@ class PostsController < ApplicationController
     doc.xpath("//@*[starts-with(name(),'on')]").remove
 
     # select body
-    title = doc.css('title').text
-    body = doc.css('body').text
+    # title = doc.css('title').text
+    title = doc.css(title_name).text
     content = doc.css(body_name).text
-    # body.gsub!(/<\s*script\s*>|<\s*\/\s*script\s*>/, '')
-
     # just tag
     tag = doc.css(tag_name).text
-
+    # body = doc.css('body').text
+    # body.gsub!(/<\s*script\s*>|<\s*\/\s*script\s*>/, '')
 
     all_array = Array.new
     # all_text = content.split(".")
@@ -134,10 +135,40 @@ p '~~~~~~~~~~~~~~~~~~~~~~'
     all_text.each do |s|
       twitter << processor.stem(s)
     end
+  puts all_text.class
+  puts all_text[0].class
+  idf = Array.new
+  all_text.each do |at|
+    # puts at
+    idf << TfIdfSimilarity::Document.new(at)
+    # puts idf
+  end
+  idf << TfIdfSimilarity::Document.new(title)
 
-    p twitter
-    p tag
-    p '======================'
+  model = TfIdfSimilarity::TfIdfModel.new(idf, :library => :narray)
+
+  tfidf_by_term = {}
+  # idf[7].terms.each do |tff|
+  #   tfidf_by_term[tff] = model.tfidf(idf[7], tff)
+  # end
+  # idf.each do |i|
+  #   i.terms.each do |t|
+  #     tfidf_by_term[t] = model.tfidf(i, t)
+  #   end
+  # end
+  idf[-1].terms.each do |term|
+    tfidf_by_term[term] = model.tfidf(idf[-1], term)
+  end
+  tf = tfidf_by_term.sort_by{|_,tfidf| -tfidf}
+
+  # puts "+++++++++++++++++++++++++++++++++"
+  # tf.each do |tt|
+  #   puts tt
+  # end
+  # puts tf
+    # p twitter
+    # p tag
+    # p '======================'
     # extract pharases
     # twitter = processor.extract_phrases(all_text)
     # twitter = processor.extract_phrases(all_text).first.metadata
@@ -151,7 +182,6 @@ p '~~~~~~~~~~~~~~~~~~~~~~'
         # puts t.metadata
       end
     end
-
 
     # words_count
     word = Hash.new(0)
@@ -175,14 +205,16 @@ p '~~~~~~~~~~~~~~~~~~~~~~'
     # puts word
     # puts "================="
 
-
+    tag1 = tf[-1][0]
+    tag2 = word.keys[0]
+    tag3 = word.keys[1]
 
     Post.create(
       title: title,
       src_url: params[:src_url],
-      tag1: word.keys[0],
-      tag2: word.keys[1],
-      tag3: word.keys[2],
+      tag1: tag1,
+      tag2: tag2,
+      tag3: tag3,
       desc: params[:desc], #대략적인 설명
       html: all_text, #all_text, # all_arra y# text | body
       words: word #word twitter # word # NLP fuction 비교
@@ -227,17 +259,19 @@ p '~~~~~~~~~~~~~~~~~~~~~~'
     end
 
     def check_url(url)
+      #div_775
       crawl_hash= {
-        "cafe.naver"    => ["#ct",nil,true],
-        "blog.naver"    => [".se_component_wrap",".post_tag",true],
-        "cafe.daum"     => ["#daumWrap",nil,true],
-        "blog.daum"     => ["#article","#tagListLayer_11777182",true],
-        "stackoverflow" => ["#mainbar",nil,false],
-        "github"        => ["#readme","body",false],
-        "brunch"        => [".wrap_view_article",nil,false]
+        "cafe.naver"    => ["h2.tit","#ct",nil,true],
+        "blog.naver"    => ["h3.se_textarea",".__se_component_area",".post_tag",true],
+        "cafe.daum"     => ["h3.tit_subject","#daumWrap",nil,true],
+        "blog.daum"     => ["h3.tit_view","#article","#tagListLayer_11777182",true],
+        "stackoverflow" => ["title","#mainbar",nil,false],
+        "github"        => ["title","#readme","body",false],
+        "brunch"        => ["title",".wrap_view_article",nil,false],
+        "tistory"       => [".titleWrap","#body > div.article > div > div", ".tag_label", false]
       }
 
-      def_val = ["body",nil,false] # crawl_hash에 지정되어 있지 않은 도메인의 url
+      def_val = ["title","body",nil,false] # crawl_hash에 지정되어 있지 않은 도메인의 url
 
       # "body name","tag name", "Mobile Mode"
       crawl_hash.each do |key, val|
