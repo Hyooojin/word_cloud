@@ -1,3 +1,5 @@
+require 'active_support'
+
 # url = "https://m.blog.naver.com/sera8668/221159434304"
 # url = "http://navercast.naver.com/magazine_contents.nhn?rid=1639&contents_id=139016"
 # url = "https://stackoverflow.com/questions/7908598/add-https-to-url-if-its-not-there"
@@ -25,20 +27,35 @@ url = "http://www.test.com/dir/filename.jpg?var1=foo#bar"
 # #   url = url.gsub(url.partition("//")[1], url.partition("//")[1]+"m." )
 # # end
 
+# (1) url을 확인한다. true false로 m에 대한 과정을 거치지 않도록
+# (2) naver나 daum이 있으면,
+# (3) m을 이후 붙인다.
 
 
+active = "lo".in?("hello")
+puts active
+# "naver".in?("naverblog")
+#   puts url
+# end
+# "naver".in?(url)
+#   puts url
+# end
+
+# url.in?(['naver', 'daum'])
+#   puts url
+# end
 
 
-m_url = ["naver", "daum"]
-m_url.each do |m|
-  if url.include? m
-    url = url.gsub(url.partition("//")[1], url.partition("//")[1]+"m." )
-  end
-  # puts m
-end
-
-
-puts url
+# m_url = ["naver", "daum"]
+# m_url.each do |m|
+#   if url.include? m
+#     url = url.gsub(url.partition("//")[1], url.partition("//")[1]+"m." )
+#   end
+#   # puts m
+# end
+#
+#
+# puts url
 
 
 # i = 0
