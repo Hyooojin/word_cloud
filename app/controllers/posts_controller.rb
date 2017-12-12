@@ -74,8 +74,6 @@ class PostsController < ApplicationController
     end
 
 
-
-
     unless url[/\Ahttp:\/\//] || url[/\Ahttps:\/\//]
       url = "http://#{url}"
     end
@@ -97,6 +95,16 @@ class PostsController < ApplicationController
 
     title = doc.css('title').text
     body = doc.css('body').text
+    content = doc.css(".repository-content").text
+    # doc.css(".wrap_view_article").text # 브런치
+    # stackoverflow
+    # doc.css("#question-header").text
+    # doc.css("#mainbar").text
+
+    #github
+    # doc.css("#readme").text
+    #
+
     # body.gsub!(/<\s*script\s*>|<\s*\/\s*script\s*>/, '')
 
     all_array = Array.new
@@ -165,8 +173,8 @@ class PostsController < ApplicationController
       tag2: word.keys[1],
       tag3: word.keys[2],
       desc: params[:desc], #대략적인 설명
-      html: all_array, #all_text, # all_arra y# text | body
-      words: metadata #word twitter # word # NLP fuction 비교
+      html: content, #all_text, # all_arra y# text | body
+      words: word #word twitter # word # NLP fuction 비교
       )
     redirect_to root_path
 
