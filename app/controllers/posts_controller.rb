@@ -79,7 +79,7 @@ class PostsController < ApplicationController
       url = "http://#{url}"
     end
     #mobile_mod check
-    if mobile_mode
+    if mobile_mode && url["m."].nil?
       url = url.gsub(url.partition("//")[1], url.partition("//")[1]+"m." )
     end
 
@@ -95,20 +95,21 @@ class PostsController < ApplicationController
 
     # select body
     title = doc.css('title').text
-    # body = doc.css('body').text
+    body = doc.css('body').text
     content = doc.css(body_name).text
     # body.gsub!(/<\s*script\s*>|<\s*\/\s*script\s*>/, '')
 
-    # tag??
+    # just tag
+    tag = doc.css(tag_name).text
 
 
     all_array = Array.new
     all_text = ""
     content.split("\n").each do |line|
       l = line.strip
-      # l.gsub!(/<\/?[^>]*>/, "")
+      # l.gsub!(/\s+/, "")
       if(l.length > 0)
-        # puts l
+        puts l
         all_text += l + " "
         all_array << l
       end
@@ -168,7 +169,7 @@ class PostsController < ApplicationController
       tag2: word.keys[1],
       tag3: word.keys[2],
       desc: params[:desc], #대략적인 설명
-      html: content, #all_text, # all_arra y# text | body
+      html: all_text, #all_text, # all_arra y# text | body
       words: word #word twitter # word # NLP fuction 비교
       )
     redirect_to root_path
