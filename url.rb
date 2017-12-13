@@ -1,22 +1,36 @@
 require 'active_support'
+require 'rubygems'
+require 'domainatrix'
 
 # url = "https://m.blog.naver.com/sera8668/221159434304"
-# url = "http://navercast.naver.com/magazine_contents.nhn?rid=1639&contents_id=139016"
+url = "http://navercast.naver.com/magazine_contents.nhn?rid=1639&contents_id=139016"
 # url = "https://stackoverflow.com/questions/7908598/add-https-to-url-if-its-not-there"
 # url = "http://www.loc.gov/standards/mods/v3/mods-3-0.xsd"
-url = "http://www.test.com/dir/filename.jpg?var1=foo#bar"
+# url = "http://www.test.com/dir/filename.jpg?var1=foo#bar"
 # url = "https://blog.naver.com/sera8668/221159434304"
-# url = "http://blog.daum.net/mtholic/8113342"
+# url = "http://m.blog.daum.net/mtholic/8113342"
 # url = "not url"
 # url_re = /^((http[s]?|ftp):)\/)?/
 
-m_url = ["naver", "daum"] # m_url[i]
-m_url.each do |m|
-  if url.include? m
-    url = url.gsub(url.partition("//")[1], url.partition("//")[1]+"m." )
-  end
-  # puts m
-end
+url = Domainatrix.parse(url)
+# puts url.domain + url.subdomain
+re_url= url.subdomain + url.domain
+puts re_url.class
+re_url.gsub!(/(m.|www)/, '')
+puts re_url
+
+# puts url.subdomain
+
+# puts url.split(/\/\//)[1]
+# url_body = url.split(/\/\//)[1]
+# puts url_body.split(/\//)[0].sub(/(m.|.com|www.)/,'')
+# m_url = ["naver", "daum"] # m_url[i]
+# m_url.each do |m|
+#   if url.include? m
+#     url = url.gsub(url.partition("//")[1], url.partition("//")[1]+"m." )
+#   end
+#   # puts m
+# end
 
 
 # m 붙이기
@@ -41,8 +55,8 @@ end
 # (3) m을 이후 붙인다.
 
 
-active = "lo".in?("hello")
-puts active
+# active = "lo".in?("hello")
+# puts active
 # "naver".in?("naverblog")
 #   puts url
 # end
@@ -97,16 +111,6 @@ puts active
 
 
 
-
-
-
-
-
-
-
-
-
-
 # 정규표현식
 
 # re_url = url_re.match(url)
@@ -132,8 +136,27 @@ puts active
 # puts url.match(/[\/]/) # /
 # puts url.match(/[\/]+/) #//
 # puts url.match(/[^\/]+/) #http:
-# puts url.match(/([\/]+)/)
+
+
+
+##### //부터 뽑기
+# puts url.match(/([\/]+)/) # //
 # // 혹은 www 부터 .com 사이만 가져오기
+
+# puts url.match(/([\/]+)(?:\w+(?::\s*)?@)?(?:(?!10(?:\.\d{1,3}){3}))/)
+# url = "https://stackoverflow.com/questions/7908598/add-https-to-url-if-its-not-there"
+
+# puts url.match(/\A(?:(?:https?|ftp):\/\/)(?:\S+(?::\S*)?@)?(?:(?!10(?:\.\d{1,3}){3})(?!127(?:\.\d{1,3}){3})(?!169\.254(?:\.\d{1,3}){2})(?!192\.168(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]+-?)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]+-?)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})))(?::\d{2,5})?(?:\/[^\s]*)?\z/)
+# m,s ...
+
+## 만약 .이 있으면
+
+# [] pattern
+sysntax = "gray"
+puts sysntax.match(/[ae]/)
+sysntax = "reign"
+puts sysntax.match(/([^aei]+[^aei])/)
+
 
 
 # url.each do |re|
